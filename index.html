@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>人格测试合集</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    :root {
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --text: #222;
+      --text-secondary: #666;
+      --primary: #4f6ef7;
+      --primary-light: #eef1ff;
+      --danger: #e85d75;
+      --success: #34c759;
+      --radius: 24px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121214;
+        --card: #1c1c1e;
+        --text: #f1f1f1;
+        --text-secondary: #a8a8a8;
+        --primary: #7b93ff;
+        --primary-light: #252940;
+      }
+    }
+    html, body {
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+    .app-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .header {
+      padding: 24px 24px 8px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .header p {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      padding: 12px 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .tab {
+      white-space: nowrap;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background-color: var(--card);
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab.active {
+      background-color: var(--primary);
+      color: white;
+    }
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px 24px;
+    }
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+    .progress-wrap {
+      margin: 16px 0;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background-color: var(--card);
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #6b84ff);
+      width: 0%;
+      border-radius: inherit;
+      transition: width 0.4s ease;
+    }
+    .question-card {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+    }
+    .question-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .option {
+      padding: 18px 22px;
+      border-radius: 20px;
+      background-color: var(--bg);
+      border: 2px solid transparent;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .option.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+    .btn-group {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+    }
+    .btn {
+      flex: 1;
+      padding: 18px;
+      border: none;
+      border-radius: 22px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn.secondary {
+      background-color: var(--card);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+    .btn.primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 8px 24px rgba(79, 110, 247, 0.25);
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .result-card {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+    }
+    .result-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .result-desc {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .score-item {
+      margin-bottom: 20px;
+    }
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .score-bar-wrap {
+      width: 100%;
+      height: 14px;
+      background-color: var(--bg);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .score-bar {
+      height: 100%;
+      border-radius: inherit;
+    }
+    .tip-text {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 20px;
+      background-color: var(--primary-light);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .reset-btn {
+      margin-top: 28px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <h1>人格测试合集</h1>
+      <p>本地离线 · 无需联网</p>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab active" data-target="home">首页</button>
+      <button class="tab" data-target="sin">七宗罪</button>
+      <button class="tab" data-target="virtue">七美德</button>
+      <button class="tab" data-target="mbti">MBTI</button>
+    </div>
+    <div class="content-area">
+      <!-- 首页 -->
+      <section id="home" class="screen active">
+        <div class="question-card">
+          <h2 class="question-title">欢迎使用</h2>
+          <p style="color: var(--text-secondary); line-height:1.7;">
+            这套测试全部在本地运行，你的答案不会上传到任何服务器。选择一个测试开始：
+          </p>
+          <div class="options-list" style="margin-top:24px;">
+            <div class="option" onclick="switchTab('sin')">七宗罪测试（50 题）</div>
+            <div class="option" onclick="switchTab('virtue')">七美德测试（50 题）</div>
+            <div class="option" onclick="switchTab('mbti')">MBTI 测试（50 题）</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 七宗罪 -->
+      <section id="sin" class="screen">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>进度</span>
+            <span id="sin-progress-text">0 / 50</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="sin-progress-fill"></div>
+          </div>
+        </div>
+        <div class="question-card">
+          <h2 class="question-title" id="sin-question-text"></h2>
+          <div class="options-list" id="sin-options"></div>
+          <div class="btn-group">
+            <button class="btn secondary" id="sin-prev" onclick="prevQuestion('sin')">上一题</button>
+            <button class="btn primary" id="sin-next" onclick="nextQuestion('sin')">下一题</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 七美德 -->
+      <section id="virtue" class="screen">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>进度</span>
+            <span id="virtue-progress-text">0 / 50</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="virtue-progress-fill"></div>
+          </div>
+        </div>
+        <div class="question-card">
+          <h2 class="question-title" id="virtue-question-text"></h2>
+          <div class="options-list" id="virtue-options"></div>
+          <div class="btn-group">
+            <button class="btn secondary" id="virtue-prev" onclick="prevQuestion('virtue')">上一题</button>
+            <button class="btn primary" id="virtue-next" onclick="nextQuestion('virtue')">下一题</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MBTI -->
+      <section id="mbti" class="screen">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>进度</span>
+            <span id="mbti-progress-text">0 / 50</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="mbti-progress-fill"></div>
+          </div>
+        </div>
+        <div class="question-card">
+          <h2 class="question-title" id="mbti-question-text"></h2>
+          <div class="options-list" id="mbti-options"></div>
+          <div class="btn-group">
+            <button class="btn secondary" id="mbti-prev" onclick="prevQuestion('mbti')">上一题</button>
+            <button class="btn primary" id="mbti-next" onclick="nextQuestion('mbti')">下一题</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 结果页：七宗罪 -->
+      <section id="result-sin" class="screen">
+        <div class="result-card">
+          <h2 class="result-title">你的七宗罪画像</h2>
+          <p class="result-desc">下面是你在七种倾向上的得分（满分 100），分数越高代表该倾向越明显。</p>
+          <div id="sin-result-content"></div>
+        </div>
+        <button class="btn primary reset-btn" onclick="resetTest('sin')">重新测试</button>
+      </section>
+
+      <!-- 结果页：七美德 -->
+      <section id="result-virtue" class="screen">
+        <div class="result-card">
+          <h2 class="result-title">你的七美德画像</h2>
+          <p class="result-desc">下面是你在七种美德上的得分（满分 100），分数越高代表该特质越突出。</p>
+          <div id="virtue-result-content"></div>
+        </div>
+        <button class="btn primary reset-btn" onclick="resetTest('virtue')">重新测试</button>
+      </section>
+
+      <!-- 结果页：MBTI -->
+      <section id="result-mbti" class="screen">
+        <div class="result-card">
+          <h2 class="result-title" id="mbti-type-title"></h2>
+          <p class="result-desc" id="mbti-type-desc"></p>
+          <div id="mbti-result-content"></div>
+        </div>
+        <button class="btn primary reset-btn" onclick="resetTest('mbti')">重新测试</button>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ===================== 题库 =====================
+    const sinQuestions = [
+      "我时常觉得自己比别人更优秀",
+      "被人否定时我会非常不服气",
+      "我很难主动低头道歉",
+      "我喜欢被别人追捧、被重视",
+      "我不喜欢听从别人的安排",
+      "看到别人过得比我好，我会心里不平衡",
+      "别人获得成就时我会隐隐嫉妒",
+      "我会不自觉和别人攀比生活",
+      "我希望别人不如自己",
+      "看到别人好运我会觉得不公平",
+      "我容易因为小事发火",
+      "被冒犯后我很难释怀",
+      "我说话容易冲动、不克制",
+      "我容易烦躁、易怒",
+      "被误解时我会立刻生气",
+      "我常常拖延不想做事",
+      "能偷懒我就尽量偷懒",
+      "我经常懒得收拾、懒得行动",
+      "我更喜欢躺平、摆烂",
+      "遇到困难我第一反应是逃避",
+      "我很容易沉迷娱乐忘记时间",
+      "我控制不住刷视频、玩东西",
+      "我容易贪恋舒适、不想自律",
+      "我享受放纵自己的感觉",
+      "我很难克制自己的欲望",
+      "我想要的东西一定要得到",
+      "我容易过度贪恋美食享受",
+      "我容易沉迷短暂快乐",
+      "我很难节制娱乐生活",
+      "我常常放纵自己的惰性欲望",
+      "我很在乎金钱和物质",
+      "我会羡慕有钱人的生活",
+      "我觉得有钱就能拥有一切",
+      "我会因为利益改变想法",
+      "我比较吝啬、不爱分享",
+      "我喜欢幻想不切实际的好事",
+      "我经常白日做梦、不行动",
+      "我高估自己的能力",
+      "我经常空想却不努力",
+      "我容易盲目自信",
+      "我很难真心祝福别人成功",
+      "我会暗中挑剔别人优点",
+      "我容易见不得别人好",
+      "别人进步我会感到压力和不爽",
+      "我容易产生嫉妒性心理",
+      "我脾气上来很难控制",
+      "我容易急躁、不耐烦",
+      "我容易因为情绪迁怒他人",
+      "我遇事容易暴躁冲动",
+      "我很难保持情绪稳定"
+    ];
+
+    const virtueQuestions = [
+      "我愿意承认自己的不足",
+      "我能坦然接受他人的建议",
+      "我不刻意炫耀自己",
+      "我做事低调不张扬",
+      "我尊重每个人的优缺点",
+      "我真心祝福他人成功",
+      "我不会嫉妒别人的好运",
+      "我能坦然接受别人比我优秀",
+      "我乐于看见他人进步",
+      "我心态平和不攀比",
+      "我待人宽容、不计较",
+      "被冒犯后我愿意原谅",
+      "我能控制自己的怒火",
+      "我遇事冷静不暴躁",
+      "我情绪稳定、不易动怒",
+      "我做事勤快不拖延",
+      "我能自律完成任务",
+      "我不会习惯性偷懒",
+      "我遇到困难愿意坚持",
+      "我行动力很强",
+      "我懂得节制娱乐",
+      "我能克制欲望",
+      "我饮食作息比较自律",
+      "我不会过度沉迷享受",
+      "我懂得适度放松",
+      "我不贪慕物质财富",
+      "我懂得知足常乐",
+      "我愿意分享帮助他人",
+      "我不会吝啬小气",
+      "我重视精神大于物质",
+      "我有耐心对待人和事",
+      "我做事不急不躁",
+      "我能等待时机、不急于求成",
+      "我包容他人的缺点",
+      "我不容易烦躁焦虑",
+      "我待人真诚温柔",
+      "我愿意理解别人难处",
+      "我心软、愿意帮助他人",
+      "我处事温柔不强势",
+      "我心态柔软善良",
+      "我为人正直坦荡",
+      "我做事公平公正",
+      "我不偏心、不自私",
+      "我遵守原则和底线",
+      "我待人真诚公正",
+      "我勇敢面对困难",
+      "我敢于承担责任",
+      "我遇事不逃避",
+      "我有勇气改变自己",
+      "我心态积极正向"
+    ];
+
+    const mbtiQuestions = [
+      { a: "聚会之后，我感到兴奋，想继续聊天", b: "聚会之后，我感到疲惫，需要独处恢复精力" },
+      { a: "我更喜欢多人一起聊天热闹", b: "我更喜欢安静独处或者和少数好友相处" },
+      { a: "我擅长主动开启社交", b: "我更习惯安静观察，等别人先来搭话" },
+      { a: "我习惯边说话边思考", b: "我习惯先在心里想好，再表达出来" },
+      { a: "有空的时候，我更愿意约朋友一起玩", b: "有空的时候，我更愿意自己待着" },
+      { a: "我更关注新鲜想法、可能性", b: "我更关注现实细节、实际经验" },
+      { a: "做事情更依赖直觉和灵感", b: "做事情更依赖过往经验和事实" },
+      { a: "我喜欢畅想未来、各种可能性", b: "我更愿意踏实活在当下" },
+      { a: "我的思维比较跳跃，喜欢脑洞", b: "我的思维比较稳定，注重务实" },
+      { a: "我更看重潜在的可能性", b: "我更看重真实可体验的事物" },
+      { a: "做决定优先理性、客观分析", b: "做决定优先考虑人的感受与共情" },
+      { a: "评判一件事，优先看逻辑对错", b: "评判一件事，优先看对人的影响" },
+      { a: "发生分歧，我更想把道理讲清楚", b: "发生分歧，我更在意不要伤害对方情绪" },
+      { a: "我偏向公正、直接", b: "我偏向温柔、包容" },
+      { a: "判断事情优先考虑对错", b: "判断事情优先考虑人情与感受" },
+      { a: "生活喜欢提前规划好", b: "生活喜欢随性、灵活安排" },
+      { a: "习惯提前安排任务，不临时赶工", b: "习惯临时发挥，在压力下更有灵感" },
+      { a: "我讨厌混乱、没有计划", b: "我讨厌死板、固定不变的安排" },
+      { a: "我习惯先做完事情再放松", b: "我习惯边玩边做，随心情调整" },
+      { a: "我喜欢确定、可预期的安排", b: "我喜欢随机、自由的安排" },
+      { a: "我乐于主动表达自己观点", b: "我不太愿意主动发言，更喜欢倾听" },
+      { a: "我脑洞很大，喜欢想象新事物", b: "我注重细节，不容易忽略现实信息" },
+      { a: "遇到矛盾我优先讲道理", b: "遇到矛盾我优先照顾情绪" },
+      { a: "我喜欢热闹、有活力的环境", b: "我喜欢安静、低刺激的环境" },
+      { a: "我擅长想出新方案", b: "我擅长把方案落地执行" },
+      { a: "做选择果断，看重逻辑", b: "做选择体贴，看重感受" },
+      { a: "我喜欢把一切提前安排妥当", b: "我喜欢顺其自然，随遇而安" },
+      { a: "我容易对外界事物保持好奇", b: "我更专注自己的内心世界" },
+      { a: "我喜欢抽象理论、概念", b: "我喜欢真实、可触摸的体验" },
+      { a: "看待事物保持客观冷静", b: "看待事物细腻敏感，容易共情" },
+      { a: "计划被打乱会让我不舒服", b: "一成不变会让我觉得枯燥" },
+      { a: "我擅长带动气氛", b: "我擅长安静倾听与思考" },
+      { a: "我更关注远景和趋势", b: "我更关注当下的体验" },
+      { a: "我原则感很强", b: "我适应能力更强" },
+      { a: "遇到新朋友，我主动搭话", b: "遇到新朋友，等对方先来认识我" },
+      { a: "我喜欢探索全新的思路", b: "我信赖已经验证过的方法" },
+      { a: "讨论问题，我更追求客观真理", b: "讨论问题，我更追求彼此理解" },
+      { a: "我会尽量把日程排满", b: "我留很多空白，随心情安排" },
+      { a: "我喜欢不断接触新鲜人和事", b: "我需要独处时间充电" },
+      { a: "我容易联想到各种隐喻、深层含义", b: "我更关注字面与实际信息" },
+      { a: "批评时我更直接客观", b: "批评时我会小心照顾对方感受" },
+      { a: "完成目标对我很重要", b: "保持轻松自在对我更重要" },
+      { a: "我喜欢参加多人活动", b: "多人活动会消耗我的精力" },
+      { a: "我喜欢畅想各种未来可能", b: "我更关心现在能做什么" },
+      { a: "争论时我想理清逻辑", b: "争论时我希望大家都舒服" },
+      { a: "我倾向于把事情敲定", b: "我倾向保留更多可能性" },
+      { a: "我容易对外界产生兴趣", b: "我需要很多个人空间" },
+      { a: "我喜欢抽象思考", b: "我喜欢实际体验" },
+      { a: "我看重公平与逻辑", b: "我看重共情与善意" },
+      { a: "我喜欢稳定、确定的节奏", b: "我喜欢灵活多变的节奏" }
+    ];
+
+    const sinLabels = [
+      { name: "傲慢", color: "#e85d75" },
+      { name: "嫉妒", color: "#ff9500" },
+      { name: "暴怒", color: "#ff3b30" },
+      { name: "懒惰", color: "#8e8e93" },
+      { name: "色欲", color: "#ff2d55" },
+      { name: "贪婪", color: "#af52de" },
+      { name: "暴食", color: "#5856d6" }
+    ];
+    const virtueLabels = [
+      { name: "谦逊", color: "#34c759" },
+      { name: "仁爱", color: "#5ac8fa" },
+      { name: "节制", color: "#007aff" },
+      { name: "勤勉", color: "#ff9f0a" },
+      { name: "耐心", color: "#bf5af2" },
+      { name: "慷慨", color: "#ff375f" },
+      { name: "正义", color: "#30d158" }
+    ];
+
+    const mbtiTypes = {
+      "INTJ": "建筑师：富有想象力、策略型思考者，善于规划长远目标。",
+      "INTP": "逻辑学家：热爱思考，喜欢探索理论与可能性。",
+      "ENTJ": "指挥官：果断、有领导力，擅长组织与推进目标。",
+      "ENTP": "辩论家：好奇、灵活，喜欢挑战观点。",
+      "INFJ": "提倡者：安静而有洞察力，重视价值与深层联结。",
+      "INFP": "调停者：理想主义，忠于自己内心的价值观。",
+      "ENFJ": "主人公：热情、善解人意，擅长激励他人。",
+      "ENFP": "竞选者：充满活力，喜欢新体验与人的联结。",
+      "ISTJ": "物流师：务实可靠，重视规则与责任。",
+      "ISFJ": "守卫者：温暖细心，乐于照顾身边人。",
+      "ESTJ": "总经理：直接果断，擅长管理与组织。",
+      "ESFJ": "执政官：友善热情，重视社群与人际关系。",
+      "ISTP": "鉴赏家：冷静灵活，擅长解决实际问题。",
+      "ISFP": "探险家：活在当下，喜欢自由与感官体验。",
+      "ESTP": "企业家：机敏大胆，擅长应对突发情况。",
+      "ESFP": "表演者：活泼外向，享受热闹与体验。"
+    };
+
+    // ===================== 状态 =====================
+    const state = {
+      sin: { idx: 0, answers: [], selected: null },
+      virtue: { idx: 0, answers: [], selected: null },
+      mbti: { idx: 0, answers: [], selected: null }
+    };
+
+    const scaleOptions = [
+      "完全不符",
+      "不太符合",
+      "一般",
+      "比较符合",
+      "完全符合"
+    ];
+
+    // ===================== Tab / 页面切换 =====================
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.onclick = () => {
+        const target = tab.dataset.target;
+        switchTab(target);
+      };
+    });
+
+    function switchTab(name) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+
+      if (["sin", "virtue", "mbti"].includes(name)) {
+        document.getElementById(name).classList.add("active");
+        document.querySelector(`.tab[data-target="${name}"]`).classList.add("active");
+        renderQuestion(name);
+      } else {
+        document.getElementById("home").classList.add("active");
+        document.querySelector(`.tab[data-target="home"]`).classList.add("active");
+      }
+    }
+
+    // ===================== 渲染题目 =====================
+    function renderQuestion(key) {
+      const data = state[key];
+      if (data.idx >= 50) {
+        calcResult(key);
+        document.getElementById(`result-${key}`).classList.add("active");
+        return;
+      }
+
+      data.selected = null;
+      const qText = document.getElementById(`${key}-question-text`);
+      const optsWrap = document.getElementById(`${key}-options`);
+      const progressText = document.getElementById(`${key}-progress-text`);
+      const progressFill = document.getElementById(`${key}-progress-fill`);
+      const prevBtn = document.getElementById(`${key}-prev`);
+      const nextBtn = document.getElementById(`${key}-next`);
+
+      progressText.textContent = `${data.idx + 1} / 50`;
+      progressFill.style.width = `${((data.idx) / 50) * 100}%`;
+
+      if (key === "mbti") {
+        const q = mbtiQuestions[data.idx];
+        qText.textContent = `第 ${data.idx + 1} 题`;
+        optsWrap.innerHTML = "";
+        addOption(optsWrap, q.a, () => pickOption(key, "A"));
+        addOption(optsWrap, q.b, () => pickOption(key, "B"));
+      } else {
+        const list = key === "sin" ? sinQuestions : virtueQuestions;
+        qText.textContent = list[data.idx];
+        optsWrap.innerHTML = "";
+        scaleOptions.forEach((opt, i) => {
+          addOption(optsWrap, opt, () => pickOption(key, i));
+        });
+      }
+
+      prevBtn.disabled = data.idx === 0;
+      nextBtn.disabled = false;
+    }
+
+    function addOption(wrap, text, onClick) {
+      const div = document.createElement("div");
+      div.className = "option";
+      div.textContent = text;
+      div.onclick = onClick;
+      wrap.appendChild(div);
+    }
+
+    function pickOption(key, value) {
+      const data = state[key];
+      data.selected = value;
+      const opts = document.getElementById(`${key}-options`).children;
+      for (const opt of opts) opt.classList.remove("selected");
+      opts[typeof value === "number" ? value : (value === "A" ? 0 : 1)].classList.add("selected");
+    }
+
+    function nextQuestion(key) {
+      const data = state[key];
+      if (data.selected === null) {
+        alert("请选择一个答案");
+        return;
+      }
+      data.answers[data.idx] = data.selected;
+      data.idx += 1;
+      renderQuestion(key);
+    }
+
+    function prevQuestion(key) {
+      const data = state[key];
+      if (data.idx > 0) {
+        data.idx -= 1;
+        renderQuestion(key);
+      }
+    }
+
+    // ===================== 计算结果 =====================
+    function calcResult(key) {
+      if (key === "sin") calcSinResult();
+      else if (key === "virtue") calcVirtueResult();
+      else calcMbtiResult();
+    }
+
+    function calcSinResult() {
+      const ans = state.sin.answers;
+      const groups = splitToSeven(ans);
+      const scores = groups.map(g => average(g) * 25);
+      renderScoreResult("sin-result-content", sinLabels, scores);
+    }
+
+    function calcVirtueResult() {
+      const ans = state.virtue.answers;
